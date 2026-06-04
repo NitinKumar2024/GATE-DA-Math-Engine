@@ -154,3 +154,49 @@ Copy these final architectural laws. Because BCNF is the strictest normal form, 
 * **The 2-Attribute Rule:** Any relation with exactly two attributes (e.g., `R(A, B)`) is **always** in BCNF, regardless of the dependencies.
 
 ---
+
+---
+**Topic: Lossless Join Decomposition & Spurious Tuples**
+
+**1. The Core Hazard: Spurious Tuples**
+
+* **Definition:** Fake, mathematically generated rows that appear when a database engine tries to join two poorly decomposed tables together.
+* **Cause:** Joining tables on a common column that contains duplicate values (is not a key). This causes a cross-multiplication of matching records, corrupting the original data state.
+
+**2. The 3 Mathematical Laws of Lossless Decomposition**
+If a relation $R$ is decomposed into two sub-relations, $R_1$ and $R_2$, the split is guaranteed to be **Lossless** if and only if it satisfies all three conditions:
+
+* **Law 1: The Attribute Preservation (Union Rule)**
+
+$$R_1 \cup R_2 = R$$
+
+
+
+*Meaning:* Every column from the original table must be present in the new sub-tables. No attributes can be dropped or lost.
+* **Law 2: The Common Attribute (Intersection Rule)**
+
+$$R_1 \cap R_2 \neq \emptyset$$
+
+
+
+*Meaning:* The sub-tables must share at least one common attribute. A completely disjoint split cannot be joined back together.
+* **Law 3: The Key Constraint (The GATE Golden Rule)**
+
+$$(R_1 \cap R_2) \rightarrow R_1 \quad \text{OR} \quad (R_1 \cap R_2) \rightarrow R_2$$
+
+
+
+*Meaning:* The common attribute (the intersection) **must** be a Super Key or Candidate Key in at least **one** of the decomposed relations.
+
+---
+
+---
+
+### 🚀 Quick-Check Elimination Strategy for Exams
+
+When checking a question for lossless join properties:
+
+1. Instantly scan for a common attribute between the split schemas. If none exists, stop—it's **Lossy**.
+2. Find the closure of that common attribute *only within the functional dependencies that apply to that specific sub-table*.
+3. If it cannot determine all columns of either $R_1$ or $R_2$, it is **Lossy**.
+
