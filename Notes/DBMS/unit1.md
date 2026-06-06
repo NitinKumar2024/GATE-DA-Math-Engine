@@ -200,3 +200,27 @@ When checking a question for lossless join properties:
 2. Find the closure of that common attribute *only within the functional dependencies that apply to that specific sub-table*.
 3. If it cannot determine all columns of either $R_1$ or $R_2$, it is **Lossy**.
 
+---
+**Topic: Dependency Preservation in Decomposition**
+
+**1. The Core Objective**
+
+* When a table $R$ is decomposed into sub-tables ($R_1, R_2, ... R_n$), every single original Functional Dependency (FD) must still be enforceable **without** joining the tables back together.
+
+**2. The Law of Direct Preservation**
+
+* An FD ($X \rightarrow Y$) is **directly preserved** if both $X$ and $Y$ belong to the exact same decomposed sub-table ($R_i$).
+* *Example:* If $A \rightarrow B$, and we have a sub-table $R_1(A, B, C)$, the dependency is preserved. If we only have $R_1(A, C)$ and $R_2(B, D)$, the dependency is lost.
+
+**3. The Indirect Preservation Rule (The GATE Trap)**
+
+* If an FD ($X \rightarrow Y$) is split across tables, do not immediately fail it!
+* You must check if the lost FD can be **logically derived** (using Transitivity or Armstrong's Axioms) from the FDs that *were* successfully preserved in the sub-tables. If it can be derived, the decomposition is still Dependency Preserving.
+
+**4. 🚀 The Ultimate GATE Normalization Trade-Off (Memorize This!)**
+This is a guaranteed 1-mark or 2-mark theoretical question in GATE DA:
+
+* **Third Normal Form (3NF):** It is mathematically guaranteed that you can always achieve a decomposition into 3NF that is **BOTH** Lossless and Dependency Preserving.
+* **Boyce-Codd Normal Form (BCNF):** It is mathematically guaranteed to be Lossless. However, **BCNF does NOT guarantee Dependency Preservation.** Sometimes, to reach perfect BCNF architecture, you are mathematically forced to sacrifice a dependency.
+
+---
