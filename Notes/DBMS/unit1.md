@@ -224,3 +224,35 @@ This is a guaranteed 1-mark or 2-mark theoretical question in GATE DA:
 * **Boyce-Codd Normal Form (BCNF):** It is mathematically guaranteed to be Lossless. However, **BCNF does NOT guarantee Dependency Preservation.** Sometimes, to reach perfect BCNF architecture, you are mathematically forced to sacrifice a dependency.
 
 ---
+
+**Topic: Query Equivalence & Heuristic Optimization**
+
+**1. The Query Processing Pipeline**
+
+* When a SQL query is submitted, it does not execute immediately. It goes through three phases:
+* **Parser:** Checks syntax and translates SQL into a Relational Algebra tree.
+* **Optimizer:** Evaluates multiple equivalent trees and chooses the one with the lowest execution cost.
+* **Execution Engine:** Runs the optimized plan on the physical hardware.
+
+
+
+**2. Query Equivalence**
+
+* **Definition:** Two relational algebra expressions are considered *equivalent* if they generate the exact same result set for every possible state of the database.
+* The Optimizer's job is to transform a slow, naive expression into a fast, equivalent expression.
+
+**3. The Cartesian Product Trap (The Bottleneck)**
+
+* The most expensive operation a database engine can perform is a Cartesian Product ($\times$) or an unfiltered Join ($\bowtie$).
+* A naive query tree evaluates the Cartesian Product *before* applying the filter/selection ($\sigma$). This generates a massive, temporary cross-multiplied table in RAM, crashing performance.
+
+**4. 🚀 The Golden Heuristic: "Push Selections Down"**
+
+* **The Absolute Law of Optimization:** Always perform Selection ($\sigma$) and Projection ($\pi$) operations **as early as possible** (as far down the query tree as possible).
+* **The Result:** By filtering the data at the leaf nodes (directly on the base tables), you drastically reduce the number of rows *before* they enter an expensive Join or Cartesian Product operation.
+
+**5. The GATE DA Execution Strategy**
+
+* If a GATE question asks you to identify the "most optimized" relational algebra expression from a set of options, instantly look for the option where the Selection condition ($\sigma$) is placed immediately next to the relation name (e.g., $\sigma_{Dept='IT'}(Employees) \bowtie Departments$).
+
+---
