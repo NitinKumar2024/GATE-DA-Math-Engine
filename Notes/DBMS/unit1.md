@@ -256,3 +256,35 @@ This is a guaranteed 1-mark or 2-mark theoretical question in GATE DA:
 * If a GATE question asks you to identify the "most optimized" relational algebra expression from a set of options, instantly look for the option where the Selection condition ($\sigma$) is placed immediately next to the relation name (e.g., $\sigma_{Dept='IT'}(Employees) \bowtie Departments$).
 
 ---
+**Topic: Physical Execution Engine & Join Strategies**
+
+**1. Nested Loop Join (The Brute Force)**
+
+* **The Mechanism:** Two nested `FOR` loops. For every single tuple in the outer relation (Table A), the engine scans the entire inner relation (Table B).
+* **Time Complexity:** $O(M \times N)$, where $M$ and $N$ are the number of rows (or blocks) in the tables.
+* **The Use Case:** Highly inefficient for large datasets due to massive Disk I/O. The optimizer only chooses this if one table is exceptionally tiny, or if it is forced to do a non-equi join (like `A.value > B.value`).
+
+**2. Sort-Merge Join (The Elegant Zipper)**
+
+* **The Mechanism:** 1. Sort both relations on the join attribute.
+2. Use two pointers to merge them in a single linear pass.
+* **Time Complexity:** * Sorting: $O(M \log M + N \log N)$
+* Merging: $O(M + N)$
+
+
+* **The Use Case:** Highly efficient if the tables are **already sorted** (e.g., the join column is a Primary Key with a B+ Tree index). If the data is pre-sorted, the sort cost drops to zero, making it incredibly fast.
+
+**3. Hash Join (The RAM Heavyweight)**
+
+* **The Mechanism:** 1. **Build Phase:** Take the *smaller* relation and build an in-memory Hash Table using the join attribute as the key.
+2. **Probe Phase:** Scan the *larger* relation exactly once. For each row, hash the join attribute and instantly probe the Hash Table for a match.
+* **Time Complexity:** $O(M + N)$ for both building and probing.
+* **The Use Case:** The absolute fastest algorithm for unsorted data, **provided** the smaller table can fit entirely inside the system's RAM. If it cannot fit, the engine suffers from "hash collision" and "disk spilling," which destroys performance.
+
+**4. 🚀 The GATE DA Execution Shortcuts**
+
+* If the question says **"both relations are unsorted"** and asks for the fastest equi-join $\rightarrow$ **Hash Join**.
+* If the question says **"a B+ tree index exists on the join column"** $\rightarrow$ **Sort-Merge Join**.
+* If the question specifies a **non-equi join** (using `<`, `>`, `!=`) $\rightarrow$ Hash Join cannot be used. The engine must fall back to **Nested Loop** or Sort-Merge.
+
+---
