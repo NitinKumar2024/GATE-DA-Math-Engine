@@ -288,3 +288,41 @@ This is a guaranteed 1-mark or 2-mark theoretical question in GATE DA:
 * If the question specifies a **non-equi join** (using `<`, `>`, `!=`) $\rightarrow$ Hash Join cannot be used. The engine must fall back to **Nested Loop** or Sort-Merge.
 
 ---
+**Topic: Relational Calculus (TRC & DRC)**
+
+**1. The Paradigm Shift (Procedural vs. Declarative)**
+
+* **Relational Algebra (Procedural):** Specifies exactly *HOW* to retrieve data using a sequence of operations ($\pi, \sigma, \bowtie$).
+* **Relational Calculus (Declarative):** Specifies *WHAT* data to retrieve using First-Order Predicate Logic. It describes the conditions the final data must satisfy, leaving the "how" to the database optimizer.
+
+**2. Tuple Relational Calculus (TRC)**
+
+* **The Unit:** Variables represent an entire **Tuple** (a whole row).
+* **Mathematical Syntax:** $\{ t \mid P(t) \}$
+* $t$ = The tuple variable we want to output.
+* $P(t)$ = The logical condition $t$ must satisfy.
+
+
+* **Key Concept:** We access specific columns using dot notation (e.g., $t.\text{Name}$, $t.\text{Age}$).
+
+**3. Domain Relational Calculus (DRC)**
+
+* **The Unit:** Variables represent individual **Domains** (specific attributes/columns).
+* **Mathematical Syntax:** $\{ \langle x_1, x_2, \dots, x_n \rangle \mid P(x_1, x_2, \dots, x_n) \}$
+* $x_1, x_2 \dots$ = The specific column values we want to output.
+* $P(x_1 \dots)$ = The logical condition binding those variables to a table.
+
+
+* **Key Concept:** Relies heavily on the Existential Quantifier ($\exists$) to assert that matching data exists in the unselected columns.
+
+**4. The Law of "Safe" Expressions**
+
+* A calculus expression is considered **Safe** if it produces a finite number of tuples.
+* *Unsafe Example:* $\{ t \mid \neg \text{Employees}(t) \}$. (Give me all tuples that are *not* in the Employees table). This would result in an infinite list of garbage data, crashing the system. **GATE only allows Safe expressions.**
+
+**5. 🚀 The GATE DA Translation Heuristics**
+
+* **The $\exists$ Quantifier (There Exists):** Almost always translates to a basic `SELECT ... WHERE ...` or a standard Relational Algebra Projection ($\pi$) combined with a Selection ($\sigma$).
+* **The $\forall$ Quantifier (For All):** If you see $\forall$ in a calculus expression, it is almost always the equivalent of the **Relational Algebra Division Operation ($\div$)**. (e.g., "Find the student who has taken *all* courses").
+
+---
