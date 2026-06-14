@@ -20,16 +20,10 @@ class CalculusEngineV2:
         The signs alternate (+, -, +, -).
         """
         approximation = 0
-        current_sign = 1
-        for i in range(1, terms*2):
-            if i % 2 == 0:
-                continue
-            if current_sign == 1:
-                approximation = approximation + ((x**i)/math.factorial(i))
-                current_sign = 0
-            else:
-                approximation = approximation - ((x**i)/math.factorial(i))
-                current_sign = 1
+        for n in range(terms):
+            power = 2 * n + 1               # Generates 1, 3, 5, 7...
+            sign = (-1)**n                  # Generates +1, -1, +1, -1...
+            approximation += sign * (x**power) / math.factorial(power)
             
         # YOUR CODE HERE
         return approximation
