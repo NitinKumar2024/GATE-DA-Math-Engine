@@ -24,3 +24,34 @@ $$(p \times \text{Pointer Size}) + ((p - 1) \times \text{Key Size}) \le \text{Bl
 *(Why? Because one node contains $p$ pointers pointing to children, and $p-1$ keys separating those pointers, and all of those bytes combined cannot exceed the size of the hard drive block.)*
 
 ---
+**Topic: Storage Architecture & Dynamic Hashing**
+
+**1. The Goal of Hashing**
+
+* To bypass tree traversals entirely and find a physical hard drive block in exactly **$O(1)$ time** using a mathematical Hash Function.
+
+**2. Static Hashing (The Flaw)**
+
+* A fixed number of disk blocks (buckets) are allocated.
+* **The Collision Crash:** When multiple records hash to the same bucket, it overflows. The engine creates a linked list of overflow blocks. Search time violently degrades from $O(1)$ to **$O(n)$** because the engine has to scan the linked list.
+
+**3. Extendible Hashing (The GATE Standard)**
+
+* A dynamic structure that uses a **Directory** (stored in RAM) to point to physical **Buckets** (stored on Disk). It uses the binary representation of the hash value to route data.
+* **Global Depth ($d$):** The number of binary bits the *Directory* is currently looking at. The Directory always has exactly **$2^d$ entries**.
+* **Local Depth ($l$):** The number of binary bits a *specific Bucket* is looking at.
+* *Rule:* Local Depth can never be greater than Global Depth ($l \le d$).
+
+**4. 🚀 The GATE DA Splitting Rules (Memorize This!)**
+When a new record is inserted and its target Bucket is completely full (Overflow), the engine checks the depths:
+
+* **Scenario A (Local < Global):** $l < d$.
+* The directory is already big enough. The engine simply splits the overflowing bucket into two new buckets, increments the Local Depth ($l = l + 1$) for those specific buckets, and redistributes their keys. **The Directory does NOT double.**
+
+
+* **Scenario B (Local = Global):** $l = d$.
+* The directory is maxed out. The engine is forced to **double the entire Directory** ($d = d + 1$), creating $2^d$ new pointers in RAM. Then, it splits the overflowing bucket, increments its Local Depth ($l = l + 1$), and redistributes the keys.
+
+
+
+---
