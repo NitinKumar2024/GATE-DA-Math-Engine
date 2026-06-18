@@ -56,3 +56,39 @@ $$x_{new} = \frac{x - \mu}{\sigma}$$
 * If a question explicitly states that a Database Administrator decided to **"normalize the dimension tables"** $\rightarrow$ The architecture instantly transforms into a **Snowflake Schema**.
 
 ---
+**Topic: Advanced Data Transformation & OLAP Warehousing**
+
+**1. Discretization (Binning)**
+
+* **The Goal:** Transforming continuous numerical variables into discrete categorical bins.
+* **Equal-Width:** Divides the range into equal intervals (e.g., $0-10, 10-20$). *Vulnerable to skewed data leaving empty bins.*
+* **Equal-Frequency:** Ensures every bin contains the exact same *number of records*. *Handles outliers and skewed data perfectly.*
+
+**2. Sampling (The Stratified Rule)**
+
+* **The Goal:** Extracting a smaller subset of data that mathematically represents the massive whole.
+* **The GATE Rule:** Never use blind random sampling for imbalanced data (e.g., Fraud Detection). Always use **Stratified Sampling**, which guarantees the original class ratios (e.g., $99\%$ Normal, $1\%$ Fraud) are preserved exactly in the extracted sample.
+
+**3. Compression (Dimensionality Reduction)**
+
+* **The Goal:** Reducing the physical byte size of the dataset.
+* **Lossless:** Original data can be perfectly reconstructed.
+* **Lossy (PCA):** Principal Component Analysis mathematically compresses multiple columns into fewer dimensions. You lose exact raw values, but preserve the underlying variance and relationships.
+
+**4. Concept Hierarchies (OLAP Navigation)**
+
+* **Roll-up:** Zooming *out*. Aggregating data up the hierarchy. (e.g., Moving from `City` $\rightarrow$ `State` $\rightarrow$ `Country`, or `Daily` $\rightarrow$ `Monthly`).
+* **Drill-down:** Zooming *in*. Revealing finer details down the hierarchy. (e.g., Moving from `Yearly` $\rightarrow$ `Quarterly` $\rightarrow$ `Monthly`).
+
+**5. 🚀 OLAP Measures (The Highly Tested Math Rules)**
+A "Measure" is the numerical fact in the center of your Star Schema. You must classify how it can be aggregated:
+
+* **Additive:** Completely safe to SUM across *all* dimensions. (e.g., `Quantity Sold`, `Total Revenue`).
+* **Semi-Additive:** Safe to SUM across some dimensions (like Location), but **mathematically invalid to SUM across Time**. (e.g., `Inventory Level`, `Bank Balance`. You cannot add yesterday's inventory to today's inventory).
+* **Non-Additive:** Invalid to SUM across *any* dimension. Must use averages or recalculations. (e.g., `Profit Margin %`, `Discount Rate`, `Temperature`).
+
+---
+
+Box the **Semi-Additive** time constraint in red ink. If they give you a table of "Warehouse Inventory", and ask you for the monthly total, the answer is *never* a SUM; it is either the Average or the Last-Day value.
+
+---
